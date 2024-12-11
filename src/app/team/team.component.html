@@ -1,0 +1,163 @@
+<div class="fantasy-mlb-container" [class.dark-mode]="isDarkMode" >
+  <header class="header">
+    <div class="theme-toggle">
+      <button (click)="toggleTheme()" class="theme-btn">
+        {{ isDarkMode ? "Light Mode" : "Dark Mode" }}
+      </button>
+    </div>
+    <h1>Fantasy MLB Team Planner</h1>
+    <p class="tagline">Build Your Dream Team, Dominate the League</p>
+  </header>
+
+  <div class="team-actions">
+    <button (click)="newTeam()" class="action-btn">New Team</button>
+    <button (click)="resetTeam()" class="action-btn">Reset</button>
+    <button (click)="saveTeam()" class="action-btn">Save Team</button>
+    <button (click)="loadTeam()" class="action-btn">Load Team</button>
+    <input type="text" [(ngModel)]="teamName" placeholder="Enter team name" class="team-name-input">
+  </div>
+
+  <div class="filters-section">
+    <select [(ngModel)]="positionFilter" (change)="applyFilters()" class="filter-select">
+      <option value="">All Positions</option>
+      <option *ngFor="let pos of positions" [value]="pos">{{pos}}</option>
+    </select>
+    <select [(ngModel)]="teamFilter" (change)="applyFilters(); fetchPlayers($event)" class="filter-select">
+      <option value="" disabled selected>Select a team</option>
+      <option *ngFor="let team of teams" [value]="team.id">{{ team.name }}</option>
+    </select>
+  </div>
+
+  <div class="search-section">
+    <div class="search-container">
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Search players..."
+    [(ngModel)]="searchTerm"
+    (input)="searchPlayers()"
+  />
+  <div
+    class="search-dropdown"
+    *ngIf="showDropdown && searchTerm && filteredPlayers.length > 0"
+  >
+    <div
+      class="search-item"
+      *ngFor="let player of filteredPlayers"
+      (click)="selectSearchItem(player)"
+    >
+      <img [src]="player.imageUrl" alt="{{ player.name }}" class="search-thumbnail" />
+      <div class="search-info">
+        <span class="player-name">{{ player.name }}</span>
+        <span class="player-details">#{{ player.jerseyNumber }} - {{ player.team }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </div>
+
+  <div class="main-content" cdkDropListGroup>
+    <div class="player-pool">
+      <h2>Available Players</h2>
+      <div cdkDropList [cdkDropListData]="availablePlayers" class="player-list" (cdkDropListDropped)="drop($event)">
+        <div class="player-card" *ngFor="let player of filteredPlayers" cdkDrag>
+          <button class="add-button" (click)="addToTeam(player)">+</button>
+          <img
+  [src]="player.imageUrl ? player.imageUrl : 'https://t3.ftcdn.net/jpg/06/20/44/40/360_F_620444060_IezoOlZ1WU0jZv7786y64CinRQkh1oZN.jpg'"
+  alt="{{ player.name }}"
+  class="player-image"
+/>
+          <div class="player-info">
+            <h3>{{player.name}}</h3>
+            <p class="team">{{player.team}}</p>
+            <p class="position">{{player.position}}</p>
+            <div class="stats">
+              <div class="stat">
+                <span>AVG</span>
+                <span>{{player.stats.avg}}</span>
+              </div>
+              <div class="stat">
+                <span>HR</span>
+                <span>{{player.stats.hr}}</span>
+              </div>
+              <div class="stat">
+                <span>RBI</span>
+                <span>{{player.stats.rbi}}</span>
+              </div>
+              <div class="stat">
+                <span>FLD%</span>
+                <span>{{player.stats.fieldingPct}}</span>
+              </div>
+              <div class="stat">
+                <span>WAR</span>
+                <span>{{player.stats.war}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="team-selection">
+      <h2>Your Team: {{teamName || "Unnamed Team"}}</h2>
+      <div cdkDropList [cdkDropListData]="selectedTeam" class="team-list" (cdkDropListDropped)="drop($event)">
+        <div class="position-slot" *ngFor="let position of positions">
+          <h4>{{position}}</h4>
+          <div class="player-card" *ngIf="getPlayerByPosition(position) as player" cdkDrag>
+            <button class="remove-button" (click)="removeFromTeam(player)">-</button>
+            <img
+  [src]="player.imageUrl ? player.imageUrl : 'https://t3.ftcdn.net/jpg/06/20/44/40/360_F_620444060_IezoOlZ1WU0jZv7786y64CinRQkh1oZN.jpg'"
+  alt="{{ player.name }}"
+  class="player-image"
+/>
+            <div class="player-info">
+              <h3>{{player.name}}</h3>
+              <p class="team">#{{player.jerseyNumber}} - {{player.team}}</p>
+              <div class="stats">
+                <div class="stat">
+                  <span>AVG</span>
+                  <span>{{player.stats.avg}}</span>
+                </div>
+                <div class="stat">
+                  <span>HR</span>
+                  <span>{{player.stats.hr}}</span>
+                </div>
+                <div class="stat">
+                  <span>RBI</span>
+                  <span>{{player.stats.rbi}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="team-stats">
+      <h2>Team Performance Metrics</h2>
+      <div class="stats-container">
+        <div class="stat-total">
+          <h3>Team Average</h3>
+          <p>{{teamStats.avg | number:"1.3-3"}}</p>
+        </div>
+        <div class="stat-total">
+          <h3>Total Home Runs</h3>
+          <p>{{teamStats.hr}}</p>
+        </div>
+        <div class="stat-total">
+          <h3>Total RBIs</h3>
+          <p>{{teamStats.rbi}}</p>
+        </div>
+        <div class="stat-total">
+          <h3>Team Defense Rating</h3>
+          <p>{{teamStats.defenseRating | number:"1.2-2"}}</p>
+        </div>
+        <div class="stat-total">
+          <h3>Total WAR</h3>
+          <p>{{teamStats.totalWAR | number:"1.1-1"}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
