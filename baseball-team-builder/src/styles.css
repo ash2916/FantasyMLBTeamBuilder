@@ -1,0 +1,23 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  background: radial-gradient(circle, #1e1e1e, #000);
+  color: white;
+}
+
+h2 {
+  font-family: 'Roboto', sans-serif;
+  text-align: center;
+  color: #f9f9f9;
+  font-size: 2rem;
+  margin: 20px 0;
+}
+
+button {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  transform: scale(1.2);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
+}
