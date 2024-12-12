@@ -51,7 +51,7 @@ export class TeamComponent implements OnInit {
   searchTerm: string = "";
   teamStats: TeamStats = { avg: 0, hr: 0, rbi: 0, defenseRating: 0, totalWAR: 0 }; // Correctly define this property
   positions: string[] = ["P", "C", "1B", "2B", "3B", "SS", "LF", "CF", "RF", "DH"];
-  djangoApiBaseUrl = "http://127.0.0.1:8000/api";
+  djangoApiBaseUrl = "https://txaviour.pythonanywhere.com/api";
   isLoading = false;
 
   constructor(private http: HttpClient) {}
