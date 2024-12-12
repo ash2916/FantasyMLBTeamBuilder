@@ -30,7 +30,7 @@
               "@angular/material/prebuilt-themes/azure-blue.css",
               "src/styles.css"
             ],
-            "scripts": [],
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -60,10 +60,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "baseball-team-builder:build:production"
+              "buildTarget": "fantasymlbteam:build:production"
             },
             "development": {
-              "buildTarget": "baseball-team-builder:build:development"
+              "buildTarget": "fantasymlbteam:build:development"
             }
           },
           "defaultConfiguration": "development"
